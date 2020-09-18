@@ -8,7 +8,12 @@ const API = {
     }
     const json = await res.json();
 
-    return json[json.length - 1];
+    const lastWorkout = json[json.length - 1];
+    const totalDuration = lastWorkout.exercises.reduce((prev, curr) => {
+      return curr.duration + prev;
+    }, 0);
+
+    return { ...lastWorkout, totalDuration };
   },
   async addExercise(data) {
     console.log("addExercise", data);
