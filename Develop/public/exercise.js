@@ -97,23 +97,34 @@ function validateInputs() {
 async function handleFormSubmit(event) {
   event.preventDefault();
 
-  let workoutData = {};
-
+  let exercises = [];
   if (workoutType === "cardio") {
-    workoutData.type = "cardio";
-    workoutData.name = cardioNameInput.value.trim();
-    workoutData.distance = Number(distanceInput.value.trim());
-    workoutData.duration = Number(durationInput.value.trim());
+    const type = "cardio";
+    const name = cardioNameInput.value.trim();
+    const distance = Number(distanceInput.value.trim());
+    const duration = Number(durationInput.value.trim());
+    exercises = [{ type, name, distance, duration }];
   } else if (workoutType === "resistance") {
-    workoutData.type = "resistance";
-    workoutData.name = nameInput.value.trim();
-    workoutData.weight = Number(weightInput.value.trim());
-    workoutData.sets = Number(setsInput.value.trim());
-    workoutData.reps = Number(repsInput.value.trim());
-    workoutData.duration = Number(resistanceDurationInput.value.trim());
+    const type = "resistance";
+    const name = nameInput.value.trim();
+    const weight = Number(weightInput.value.trim());
+    const sets = Number(setsInput.value.trim());
+    const reps = Number(repsInput.value.trim());
+    const duration = Number(resistanceDurationInput.value.trim());
+    exercises = [{ type, name, weight, sets, reps, duration }];
   }
 
-  await API.addExercise(workoutData);
+  let workoutData = {
+    exercises,
+  };
+
+  const id = location.search.split("=")[1];
+
+  if (id) {
+    await API.addExercise({ id, ...workoutData });
+  } else {
+    await API.createWorkout(workoutData);
+  }
   clearInputs();
   toast.classList.add("success");
 }
